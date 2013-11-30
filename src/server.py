@@ -1,5 +1,6 @@
 import socket
 import os
+import check
 
 address = '127.0.0.1'
 port = 4056
@@ -12,12 +13,14 @@ while (1):
     print "\Waiting connection..."
     conn, addr = s.accept()
     print 'Address of connection', addr
-    nomeDoArquivo = conn.recv(buffer_size)
+    fileName = conn.recv(buffer_size)
     try:
-        conn.send(str(os.path.getsize(nomeDoArquivo)))
-        f = open (nomeDoArquivo, "rb") 
+        fileSize = str(os.path.getsize(fileName))
+        fileSha1 = check.getSha1(fileName)
+        conn.send("{\"size\":\""+fileSize+"\",\"sha1\":\""+fileSha1+"\"}")
+        f = open (fileName, "rb") 
         
-        print "Sending file: %s" % nomeDoArquivo
+        print "Sending file: %s" % fileName
         l = f.read(buffer_size)    
         while(l):
             conn.send(l)

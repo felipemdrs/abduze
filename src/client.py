@@ -2,7 +2,7 @@ import socket
 import time
 from threading import Thread
 import os
-
+import check
 
 def adjustVelocity(velocity):
     velocityTmp = velocity
@@ -26,7 +26,7 @@ def drawProgress(progress):
     
 def velocityCalculate():
     global previousBytesReceive,currentBytesReceive,previousTime,currentTime 
-    while True:
+    while not receivedFinish:
         time.sleep(0.5)
         os.system("cls")
         currentTime += 0.5
@@ -41,24 +41,21 @@ def velocityCalculate():
         previousTime = currentTime
 
 def searchFile():
-    global totalBytes
+    global totalBytes, sha1OriginFile
     s.connect((ipAddress, port))
     print filename
     s.send(filename)
-    totalBytes = long(s.recv(buffer_size))/1024.
+    fileInfo = eval(s.recv(buffer_size))
+    totalBytes = long(fileInfo.get("size"))/1024.
+    sha1OriginFile = fileInfo.get("sha1")
+ 
+def verifyIntegrity(filePath):
+    if (check.sha1Equals(sha1OriginFile, filePath)):
+        print "File received with success!"
+    else:
+        print "File is corrupted!";
 
-def getSizeFile():
-    s.bind((ipAddress, port))
-    s.listen(1)
-    conn, addr = s.accept()
-    data = s.recv(buffer_size)
-    print "size "+data
-    #conn.send("sizeReceived")
-  
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-
-
 
 ipAddress = '127.0.0.1'
 port = 4056
@@ -69,6 +66,7 @@ currentBytesReceive = 0
 previousBytesReceive = 0
 currentTime = 0
 previousTime = 0
+sha1OriginFile = ""
 
 filename = raw_input("filename: ")
 totalBytesReceived = 0
@@ -76,14 +74,17 @@ totalBytesReceived = 0
 searchFile()
 
 fileTransferred = False
+receivedFinish = False
+
 th = Thread( target=velocityCalculate, )
 
 while (True):
     l = s.recv(buffer_size)
     if l == "":
+        receivedFinish = True
         if (fileTransferred):
-            print "Arquivo recebido."
             f.close()
+            verifyIntegrity(filename+"_copia")
         else:
             print "Arquivo nao encontrado."
         break
