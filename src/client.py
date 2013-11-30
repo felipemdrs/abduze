@@ -3,6 +3,7 @@ import time
 from threading import Thread
 import os
 import check
+import calculate
 
 def adjustVelocity(velocity):
     velocityTmp = velocity
@@ -36,6 +37,7 @@ def velocityCalculate():
         print "Size: "+adjustSize(totalBytes)
         print "Bytes receive: "+ adjustSize(currentBytesReceive/1024.)
         print "Progress: %.2f%%" %(kByteReceive)
+        print "Time: "+calculate.timeRemainder(currentTime, totalBytes*1024., currentBytesReceive)
         drawProgress(kByteReceive)
         previousBytesReceive = currentBytesReceive
         previousTime = currentTime
@@ -57,7 +59,7 @@ def verifyIntegrity(filePath):
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-ipAddress = '127.0.0.7'
+ipAddress = "127.0.0.1"
 port = 4056
 buffer_size = 1024
 

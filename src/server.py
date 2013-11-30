@@ -16,7 +16,7 @@ while (1):
     fileName = conn.recv(buffer_size)
     try:
         fileSize = str(os.path.getsize(fileName))
-        fileSha1 = check.getSha1(fileName)
+        fileSha1 = "ok"#check.getSha1(fileName)
         conn.send("{\"size\":\""+fileSize+"\",\"sha1\":\""+fileSha1+"\"}")
         f = open (fileName, "rb") 
         
