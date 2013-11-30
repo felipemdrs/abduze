@@ -57,7 +57,7 @@ def verifyIntegrity(filePath):
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-ipAddress = '127.0.0.1'
+ipAddress = '127.0.0.7'
 port = 4056
 buffer_size = 1024
 
