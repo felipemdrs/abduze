@@ -43,8 +43,12 @@ def velocityCalculate():
         previousTime = currentTime
 
 def searchFile():
-    global totalBytes, sha1OriginFile
-    s.connect((ipAddress, port))
+    global totalBytes, sha1OriginFile, port
+    while(1):
+		try:
+			s.connect((ipAddress, port))
+			break 
+		except: port += 1
     print filename
     s.send(filename)
     fileInfo = eval(s.recv(buffer_size))
